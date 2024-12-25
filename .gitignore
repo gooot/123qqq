@@ -1,0 +1,28 @@
+*.env
+.gradle
+build/
+data/logs
+docker-postgres
+omocha-domain/src/main/generated
+HELP.md
+omocha.iml
+
+omocha-api/src/main/resources/logback-spring-test.yml
+application-test.yml
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+!**/src/main/**/out/
+!**/src/test/**/out/

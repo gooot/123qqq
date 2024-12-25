@@ -1,0 +1,60 @@
+name: omocha-api
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  omocha:
+    image: kwlim1120ss/${DOCKERHUB_REPOSITORY}
+    container_name: ${API_SERVER_NAME}
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: ${AWS_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${AWS_DATABASE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${AWS_DATABASE_PASSWORD}
+      TZ: "Asia/Seoul"
+    env_file:
+      - .env
+    volumes:
+      - ${EC2_HOME_DIR}:/omocha
+    networks:
+      - backend
+    depends_on:
+      - redis
+
+  redis:
+    container_name: redis
+    image:
+      redis/redis-stack-server:7.2.0-v13
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    volumes: # 마운트할 볼륨 설정
+      - ${REDIS_DATA_PATH}:/data
+      - ${REDIS_DEFAULT_CONFIG_FILE}:/opt/redis-stack/etc/redis-stack.conf
+    command: redis-server /opt/redis-stack/etc/redis-stack.conf
+    networks:
+      - backend
+    restart: always
+
+
+
+  database:
+    image: postgres:16.4
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=${LOCAL_DATABASE_NAME}
+      - POSTGRES_USER=${LOCAL_DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${LOCAL_DATABASE_PASSWORD}
+      - TZ=Asia/Seoul
+    env_file:
+      - .env
+    volumes:
+      - ${POSTGRES_HOME_DIR}/data:/var/lib/postgresql/data # ${POSTGRES_HOME_DIR}/data
+    networks:
+      - backend
